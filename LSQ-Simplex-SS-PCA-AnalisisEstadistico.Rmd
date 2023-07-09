@@ -3,7 +3,7 @@ title: "LSQ vs Simplex vs PCA"
 output: pdf_document
 ---
 
-```{r setup}
+```{r setup, warning=FALSE,message=FALSE}
 library(rlang)
 library(ggplot2)
 library(ggsignif)
@@ -16,7 +16,7 @@ library(rstatix)
 
 # Lectura de archivos y definición de variables
 
-```{r cargado de archivos}
+```{r cargado de archivos,warning=FALSE,message=FALSE}
 # Para facilitar la automatización de la revisión de archivos
 # los datos fueron colocados en subcarpetas en base a su nivel de
 # contaminación
@@ -106,7 +106,7 @@ for (n in 1:length(contaminacion)) {
 
 ## Comportamiendo de las estimaciones por número de simulaciones
 
-```{r analisis y graficas,fig.dim = c(10,8)} 
+```{r analisis y graficas,fig.dim = c(10,8),message=FALSE,warning=FALSE} 
 #fig.dim = c(9,7)
 #Para usar la prueba Dunn para comparaciones a pares como prueba post-hoc complementaria
 #a la prueba Kruskal-Wallis
