@@ -6,7 +6,6 @@ output: pdf_document
 ```{r setup, warning=FALSE,message=FALSE}
 library(rlang)
 library(ggplot2)
-library(ggsignif)
 library(knitr)
 library(tidyverse)
 library(tidyr)
@@ -134,9 +133,6 @@ for (i in 1:length(RV)){
     PCA=sprintf("%sp%dq%dR%dP%dNR%d",method[4],pV[j],qV[j],RV[i],l,porcion)
     var.PCA=get(PCA)
   
-    
-    
-    
     # slopes = data.frame(
     #   Valores = c(var.LSQ[,1],
     #                 var.S[,1],
@@ -445,10 +441,46 @@ for (i in 1:length(RV)){
       a10=fligner.test(m_data ~ groups)
       
       p_val_adj= p.adjust(c(a5$p.value,a6$p.value,a7$p.value,a8$p.value,a9$p.value,a10$p.value), method = 'bonferroni')
+      
+     # ordenamos los p-valores para su comparación
+
+      stat.test <- tibble::tribble(
+  ~group1, ~group2,   ~p.adj,
+    "LSQ","S", p_val_adj[1], 
+    "LSQ","SS", p_val_adj[2],
+    "LSQ","PCA", p_val_adj[3], 
+    "S","PCA", p_val_adj[4], 
+    "SS","PCA", p_val_adj[5], 
+    "SS"  ,"S", p_val_adj[6] 
+    )
+	
+    #Redefinimos m_data para que contenga la informacion original
+    m_data<-c(var.LSQ[,1],var.S[,1],var.SS[,1],var.PCA[,1])
+    #Añadimos los niveles de significancia (los asteriscos que aparecen sobre las
+    #líneas)
+    stat.test= stat.test %>% add_significance()
+    
+     #Escribimos los métodos que se utilizaron
+    Methods<-factor(rep(1:4,c(length(var.LSQ[,1]),length(var.S[,1]),length(var.SS[,1]),length(var.PCA[,1]))),
+               labels = c('LSQ','S','SS','PCA'))
+    #Estructuramos como un data frame
+    dat<-data.frame(m_data,Methods)
+
+    #Imprimimos un boxplot con las diferencias
+    plot3<-ggboxplot(dat, x = "Methods", y = "m_data") +
+  stat_pvalue_manual(stat.test, y.position =max(median(var.LSQ[,1]),median(var.S[,1]),median(var.SS[,1]),median(var.PCA[,1]))+1, #Un mejor ajuste de las líneas
+    step.increase = 0.1,
+    label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
+    )+theme(plot.title = element_text(hjust = 0.5))+
+    labs(y= "Slopes estimations",
+	 title="Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)") 
+    print(plot3)
+      
+    #el anterior grafico (plot3) reemplaza al que esta a continuacion
       plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
            ylab='p-value',ylim=c(0,1),
            main='Fligner-Killeen test for pairwise comparisons with Bonferroni correction for p-values (m)')
-      axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs PCA','S vs PCA','LSQ vs SS','SS vs PCA', 'SS vs S'))
+      axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
       abline(h=0.05, col="red", lwd=2, lty=2)
       mtext(sprintf("m=%6f, b=%6f, L=%d, p=%d,q=%d, R=%d, mu=%d, sf=0.%d, contaminados=%d%%",m,b,L,pV[j],qV[j],
                   RV[i],mu,sf,porcion), side = 3, line = -0.9, outer = T)
@@ -459,46 +491,83 @@ for (i in 1:length(RV)){
       #LSQ vs S
       b_data<-c(var.LSQ[,2],var.S[,2])
       #Etiquetas para identificar el método del cuál provienen
-      groups<-factor(rep(1:2,c(length(var.LSQ[,1]),length(var.S[,1]))),
+      groups<-factor(rep(1:2,c(length(var.LSQ[,2]),length(var.S[,2]))),
                      labels = c('b_LSQ','b_S'))
       a5=fligner.test(b_data ~ groups)
       #LSQ vs SS
       b_data<-c(var.LSQ[,2],var.SS[,2])
       #Etiquetas para identificar el método del cuál provienen
-      groups<-factor(rep(1:2,c(length(var.LSQ[,1]),length(var.SS[,1]))),
+      groups<-factor(rep(1:2,c(length(var.LSQ[,2]),length(var.SS[,2]))),
                      labels = c('b_LSQ','b_SS'))
       a6=fligner.test(b_data ~ groups)
       
       #LSQ vs PCA
       b_data<-c(var.LSQ[,2],var.PCA[,2])
       #Etiquetas para identificar el método del cuál provienen
-      groups<-factor(rep(1:2,c(length(var.LSQ[,1]),length(var.PCA[,1]))),
+      groups<-factor(rep(1:2,c(length(var.LSQ[,2]),length(var.PCA[,2]))),
                      labels = c('b_LSQ','b_PCA'))
       a7=fligner.test(b_data ~ groups)
       #S vs PCA
       b_data<-c(var.S[,2],var.PCA[,2])
       #Etiquetas para identificar el método del cuál provienen
-      groups<-factor(rep(1:2,c(length(var.S[,1]),length(var.PCA[,1]))),
+      groups<-factor(rep(1:2,c(length(var.S[,2]),length(var.PCA[,2]))),
                      labels = c('b_S','b_PCA'))
       a8=fligner.test(b_data ~ groups)
       #SS vs PCA
       b_data<-c(var.SS[,2],var.PCA[,2])
       #Etiquetas para identificar el método del cuál provienen
-      groups<-factor(rep(1:2,c(length(var.SS[,1]),length(var.PCA[,1]))),
+      groups<-factor(rep(1:2,c(length(var.SS[,2]),length(var.PCA[,2]))),
                      labels = c('b_SS','b_PCA'))
       a9=fligner.test(b_data ~ groups)
       #SS vs S
       b_data<-c(var.SS[,2],var.S[,2])
       #Etiquetas para identificar el método del cuál provienen
-      groups<-factor(rep(1:2,c(length(var.SS[,1]),length(var.S[,1]))),
+      groups<-factor(rep(1:2,c(length(var.SS[,2]),length(var.S[,2]))),
                      labels = c('b_SS','b_S'))
       a10=fligner.test(b_data ~ groups)
       
       p_val_adj= p.adjust(c(a5$p.value,a6$p.value,a7$p.value,a8$p.value,a9$p.value,a10$p.value), method = 'bonferroni')
+
+
+     # ordenamos los p-valores para su comparación
+
+      stat.test <- tibble::tribble(
+  ~group1, ~group2,   ~p.adj,
+    "LSQ","S", p_val_adj[1], 
+    "LSQ","SS", p_val_adj[2],
+    "LSQ","PCA", p_val_adj[3], 
+    "S","PCA", p_val_adj[4], 
+    "SS","PCA", p_val_adj[5], 
+    "SS"  ,"S", p_val_adj[6] 
+    )
+	
+    #Redefinimos b_data para que contenga la informacion original
+    b_data<-c(var.LSQ[,2],var.S[,2],var.SS[,2],var.PCA[,2])
+    
+    #Añadimos los niveles de significancia (los asteriscos que aparecen sobre las
+    #líneas)
+    stat.test= stat.test %>% add_significance()
+    
+     #Escribimos los métodos que se utilizaron
+    Methods<-factor(rep(1:4,c(length(var.LSQ[,2]),length(var.S[,2]),length(var.SS[,2]),length(var.PCA[,2]))),
+               labels = c('LSQ','S','SS','PCA'))
+    #Estructuramos como un data frame
+    dat<-data.frame(b_data,Methods)
+
+    #Imprimimos un boxplot con las diferencias
+    plot4<-ggboxplot(dat, x = "Methods", y = "b_data") +
+  stat_pvalue_manual(stat.test, y.position =max(median(var.LSQ[,2]),median(var.S[,2]),median(var.SS[,2]),median(var.PCA[,2]))+1, #Un mejor ajuste de las líneas
+    step.increase = 0.1,
+    label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
+    )+theme(plot.title = element_text(hjust = 0.5))+
+    labs(y= "Intercepts estimations",
+	 title="Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)") 
+    print(plot4)
+
       plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
            ylab='p-value',ylim=c(0,1),
            main='Fligner-Killeen test for pairwise comparisons with Bonferroni correction for p-values (b)')
-      axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs PCA','S vs PCA','LSQ vs SS','SS vs PCA', 'SS vs S'))
+      axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
       abline(h=0.05, col="red", lwd=2, lty=2)
       mtext(sprintf("m=%6f, b=%6f, L=%d, p=%d,q=%d, R=%d, mu=%d, sf=0.%d, contaminados=%d%%",m,b,L,pV[j],qV[j],
                   RV[i],mu,sf,porcion), side = 3, line = -0.9, outer = T)
