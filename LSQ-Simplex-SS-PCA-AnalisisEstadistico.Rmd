@@ -209,11 +209,12 @@ par(mfrow=c(1,1)) #Retornamos el espacio de figuras usual
 
 a1<-kruskal.test(list(var.LSQ[,1],var.S[,1],var.SS[,1],var.PCA[,1]))
 a2<-kruskal.test(list(var.LSQ[,2],var.S[,2],var.SS[,2],var.PCA[,2]))
-plot(seq(1,2,1),c(a1$p.value,a2$p.value),main='Kruskal-Wallis test for equality of medians',
- xlab='Comparatives',xaxt = 'n', ylab='p-value',ylim=c(0,1))
-axis(1, at = seq(2), labels = c('Slope','Intercept'))
-abline(h=0.05, col="red", lwd=2, lty=2)
-mtext(parametros, side = 3, line = -0.9, outer = T)
+
+# plot(seq(1,2,1),c(a1$p.value,a2$p.value),main='Kruskal-Wallis test for equality of medians',
+#  xlab='Comparatives',xaxt = 'n', ylab='p-value',ylim=c(0,1))
+# axis(1, at = seq(2), labels = c('Slope','Intercept'))
+# abline(h=0.05, col="red", lwd=2, lty=2)
+# mtext(parametros, side = 3, line = -0.9, outer = T)
 
 
 #Estimaciones de la pendiente como vector fila
@@ -260,6 +261,8 @@ Methods<-factor(rep(1:4,c(length(var.LSQ[,1]),length(var.S[,1]),length(var.SS[,1
        labels = c('LSQ','S','SS','PCA'))
 #Estructuramos como un data frame
 dat<-data.frame(m_data,Methods)
+
+par(mfrow=c(1,2))
 #Imprimimos el boxplot mostrando las diferencias
 plot1<-ggboxplot(dat, x = "Methods", y = "m_data") +
 stat_pvalue_manual(stat.test, y.position =max(median(var.LSQ[,1]),median(var.S[,1]),median(var.SS[,1]),median(var.PCA[,1]))+1, #Un mejor ajuste de las líneas
@@ -273,13 +276,13 @@ print(plot1)
 
 #La figura que se genera con las líneas anteriores sustituye el siguiente 
 
-plot(seq(1,6,1),q$res$P.adj,xlab='Comparatives',xaxt = 'n',
-   ylab='p-value',ylim=c(0,1),
-   main='Dunn test for pairwise comparisons on slopes, with Bonferroni correction for p-values')
-axis(1, at = seq(6), labels = c('LSQ vs PCA','LSQ vs S','PCA vs S','LSQ vs SS','PCA vs SS', 'S vs SS'))
-abline(h=0.05, col="red", lwd=2, lty=2)
-mtext(parametros, side = 3, line = -0.9, outer = T) 
-}
+# plot(seq(1,6,1),q$res$P.adj,xlab='Comparatives',xaxt = 'n',
+#    ylab='p-value',ylim=c(0,1),
+#    main='Dunn test for pairwise comparisons on slopes, with Bonferroni correction for p-values')
+# axis(1, at = seq(6), labels = c('LSQ vs PCA','LSQ vs S','PCA vs S','LSQ vs SS','PCA vs SS', 'S vs SS'))
+# abline(h=0.05, col="red", lwd=2, lty=2)
+# mtext(parametros, side = 3, line = -0.9, outer = T) 
+# }
 
 
 if(a2$p.value<0.05){
@@ -319,13 +322,13 @@ labs(y= "Intercepts estimations",
      caption = parametros)
 print(plot2)
 
-# lo anterior reemplaza esta grafica
-plot(seq(1,6,1),q$res$P.adj,xlab='Comparatives',xaxt = 'n',
-   ylab='p-value',ylim=c(0,1),
-   main='Dunn test for pairwise comparisons on intercepts, with Bonferroni correction for p-values')
-axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs PCA','S vs PCA','LSQ vs SS','SS vs PCA','S vs SS'))
-abline(h=0.05, col="red", lwd=2, lty=2)
-mtext(parametros, side = 3, line = -0.9, outer = T)
+# # lo anterior reemplaza esta grafica
+# plot(seq(1,6,1),q$res$P.adj,xlab='Comparatives',xaxt = 'n',
+#    ylab='p-value',ylim=c(0,1),
+#    main='Dunn test for pairwise comparisons on intercepts, with Bonferroni correction for p-values')
+# axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs PCA','S vs PCA','LSQ vs SS','SS vs PCA','S vs SS'))
+# abline(h=0.05, col="red", lwd=2, lty=2)
+# mtext(parametros, side = 3, line = -0.9, outer = T)
 }
 
 
@@ -421,13 +424,13 @@ labs(y= "Slopes estimations",
 caption= parametros) 
 print(plot3)
 
-#el anterior grafico (plot3) reemplaza al que esta a continuacion
-plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
-   ylab='p-value',ylim=c(0,1),
-   main='Fligner-Killeen test for pairwise comparisons with Bonferroni correction for p-values (m)')
-axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
-abline(h=0.05, col="red", lwd=2, lty=2)
-mtext(parametros, side = 3, line = -0.9, outer = T)
+# #el anterior grafico (plot3) reemplaza al que esta a continuacion
+# plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
+#    ylab='p-value',ylim=c(0,1),
+#    main='Fligner-Killeen test for pairwise comparisons with Bonferroni correction for p-values (m)')
+# axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
+# abline(h=0.05, col="red", lwd=2, lty=2)
+# mtext(parametros, side = 3, line = -0.9, outer = T)
 }
 
 #Comparacion por pares sobre las b
@@ -509,13 +512,13 @@ labs(y= "Intercepts estimations",
 caption=parametros)
 print(plot4)
 
-plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
-   ylab='p-value',ylim=c(0,1),
-   main='Fligner-Killeen test for pairwise comparisons with Bonferroni correction for p-values (b)')
-axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
-abline(h=0.05, col="red", lwd=2, lty=2)
-mtext(parametros, side = 3, line = -0.9, outer = T)
-
+# plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
+#    ylab='p-value',ylim=c(0,1),
+#    main='Fligner-Killeen test for pairwise comparisons with Bonferroni correction for p-values (b)')
+# axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
+# abline(h=0.05, col="red", lwd=2, lty=2)
+# mtext(parametros, side = 3, line = -0.9, outer = T)
+}
 }
 }
 }
