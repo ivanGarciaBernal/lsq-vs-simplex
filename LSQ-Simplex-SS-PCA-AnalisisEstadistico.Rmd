@@ -104,7 +104,7 @@ aux[2:longitudes[k], ]
 
 ## Comportamiendo de las estimaciones por número de simulaciones
 
-```{r analisis y graficas,fig.dim = c(10,8),message=FALSE,warning=FALSE}
+```{r analisis y graficas,fig.dim = c(10,6),message=FALSE,warning=FALSE}
 
 #fig.dim = c(9,7)
 #Para usar la prueba Dunn para comparaciones a pares como prueba post-hoc complementaria
@@ -181,11 +181,11 @@ abline(h=mean(var.S[,2]), col="blue", lwd=2, lty=4)
 #Título para la figura mostrando parámetros usados
 mtext(parametros, side = 3, line = -1.2, outer = T)
 
-plot(sims,var.SS[,1],main='Simplex simple slopes',xlab='Simulations',ylab='Estimations',
+plot(sims,var.SS[,1],main='Simpler Simplex slopes',xlab='Simulations',ylab='Estimations',
  ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
 abline(h=m, col="red", lwd=2, lty=2)
 abline(h=mean(var.SS[,1]), col="blue", lwd=2, lty=4)
-plot(sims,var.SS[,2],main='Simplex simple intercepts',xlab='Simulations',ylab='Estimations',
+plot(sims,var.SS[,2],main='Simpler Simplex intercepts',xlab='Simulations',ylab='Estimations',
  ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
 abline(h=b, col="red", lwd=2, lty=2)
 abline(h=mean(var.SS[,2]), col="blue", lwd=2, lty=4)
@@ -266,7 +266,7 @@ stat_pvalue_manual(stat.test, y.position =max(median(var.LSQ[,1]),median(var.S[,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Slope estimations",
-     title="Slopes") 
+     title="Slope comparisons") 
 # print(plot1)
 
 #La figura que se genera con las líneas anteriores sustituye el siguiente 
@@ -313,7 +313,7 @@ step.increase = 0.1,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Intercepts estimations",
-     title="Intercepts")
+     title="Intercept comparisons")
 # print(plot2)
 
 # # lo anterior reemplaza esta grafica
@@ -327,7 +327,9 @@ labs(y= "Intercepts estimations",
 # }
 
 #imprimimos plot1 y plot2 en conjunto
-grid.arrange(plot1, plot2, ncol=2, nrow = 1, top = "Pairwise comparisons of the medians with Bonferroni correction (Dunn test)",bottom = parametros )
+grid.arrange(plot1, plot2, ncol=2, nrow = 1,
+             top = "Pairwise comparisons of the medians with Bonferroni correction (Dunn test)",
+             padding = unit(0.5,'cm'))
 
 #Prueba de igualdad de varianzas (m)
 a3=fligner.test(m_data ~ groups)
@@ -417,7 +419,7 @@ step.increase = 0.1,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Slopes estimations",
- title="Slopes") 
+ title="Slope comparisons") 
 # print(plot3)
 
 # #el anterior grafico (plot3) reemplaza al que esta a continuacion
@@ -504,7 +506,7 @@ step.increase = 0.1,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Intercepts estimations",
- title="Intercepts")
+ title="Intercept comparisons")
 #print(plot4)
 
 # plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
@@ -516,7 +518,8 @@ labs(y= "Intercepts estimations",
 # }
 
 # imprimimos plot3 y plot4 en conjunto
-grid.arrange(plot3, plot4, ncol=2, nrow = 1, top = "Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)",bottom = parametros )
+grid.arrange(plot3, plot4, ncol = 2, nrow = 1,
+             top = "Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)",bottom = parametros )
 
 
 }
