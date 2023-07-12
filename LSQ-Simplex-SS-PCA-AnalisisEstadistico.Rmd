@@ -160,24 +160,24 @@ ubound_b<-max(var.LSQ[,2],var.S[,2],var.SS[,2],var.PCA[,2])
 
 plot(sims, var.LSQ[, 1],
 main = "LSQ slopes", xlab = "Simulations", ylab = "Estimations",
-ylim = c(lbound_m, ubound_m), pch = 20, cex = 0.6
+ylim = c(lbound_m, ubound_m), pch = 20, cex=0.8
 )
 abline(h = m, col = "red", lwd = 2, lty = 2) # Pendiente real
 abline(h = mean(var.LSQ[, 1]), col = "blue", lwd = 2, lty = 4) # Pendiente promedio
 plot(sims, var.LSQ[, 2],
 main = "LSQ intercepts", xlab = "Simulations", ylab = "Estimations",
-ylim = c(lbound_b, ubound_b), pch = 20, cex = 0.6
+ylim = c(lbound_b, ubound_b), pch = 20, cex=0.8
 )
 abline(h = b, col = "red", lwd = 2, lty = 2) # Ordenada al origen real
 abline(h = mean(var.LSQ[, 2]), col = "blue", lwd = 2, lty = 4) # Ordenada al origen
 # promedio
 
 plot(sims,var.S[,1],main='Simplex slopes',xlab='Simulations',ylab='Estimations',
- ylim = c(lbound_m,ubound_m),pch=20,cex=0.6)
+ ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
 abline(h=m, col="red", lwd=2, lty=2)
 abline(h=mean(var.S[,1]), col="blue", lwd=2, lty=4)
 plot(sims,var.S[,2],main='Simplex intercepts',xlab='Simulations',ylab='Estimations',
- ylim = c(lbound_b,ubound_b),pch=20,cex=0.6)
+ ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
 abline(h=b, col="red", lwd=2, lty=2)
 abline(h=mean(var.S[,2]), col="blue", lwd=2, lty=4)
 
@@ -185,21 +185,21 @@ abline(h=mean(var.S[,2]), col="blue", lwd=2, lty=4)
 mtext(parametros, side = 3, line = -1.2, outer = T)
 
 plot(sims,var.SS[,1],main='Simplex simple slopes',xlab='Simulations',ylab='Estimations',
- ylim = c(lbound_m,ubound_m),pch=20,cex=0.6)
+ ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
 abline(h=m, col="red", lwd=2, lty=2)
 abline(h=mean(var.SS[,1]), col="blue", lwd=2, lty=4)
 plot(sims,var.SS[,2],main='Simplex simple intercepts',xlab='Simulations',ylab='Estimations',
- ylim = c(lbound_b,ubound_b),pch=20,cex=0.6)
+ ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
 abline(h=b, col="red", lwd=2, lty=2)
 abline(h=mean(var.SS[,2]), col="blue", lwd=2, lty=4)
 
 
 plot(sims,var.PCA[,1],main='PCA slopes',xlab='Simulations',ylab='Estimations',
- ylim = c(lbound_m,ubound_m),pch=20,cex=0.6)
+ ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
 abline(h=m, col="red", lwd=2, lty=2)
 abline(h=mean(var.PCA[,1]), col="blue", lwd=2, lty=4)
 plot(sims,var.PCA[,2],main='PCA intercepts',xlab='Simulations',ylab='Estimations',
- ylim = c(lbound_b,ubound_b),pch=20,cex=0.6)
+ ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
 abline(h=b, col="red", lwd=2, lty=2)
 abline(h=mean(var.PCA[,2]), col="blue", lwd=2, lty=4)
 
