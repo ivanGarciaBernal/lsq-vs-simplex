@@ -11,6 +11,7 @@ library(tidyverse)
 library(tidyr)
 library(ggpubr)
 library(rstatix)
+library(gridExtra)
 ```
 
 # Lectura de archivos y definición de variables
@@ -35,10 +36,6 @@ mu <- 0
 sf <- 75 # El valor real de sf es 0.75
 method <- c("LSQ","S","SS","PCA")
 
-# pendientes <- c(2, 1/2, round(sqrt(2), 6))
-# ordenadas_al_origen <- c(1, round(2 / 3, 6), round(1 / sqrt(2), 6))
-
-#sin usar la funcion round()
 pendientes <- c(2, 1/2, 1.414214)
 ordenadas_al_origen <- c(1, 0.666667, 0.707107)
 
@@ -233,7 +230,7 @@ groups<-factor(rep(1:4,c(length(var.LSQ[,2]),length(var.S[,2]),length(var.SS[,2]
 #Si el p-valor es menor que 0.05 implica diferencias en las medianas al estudiar los tres métodos
 #Hagamos pruebas a pares para determinar las diferencias entre métodos
 
-if(a1$p.value<0.05){
+# if(a1$p.value<0.05){
 #Pruebas a pares de diferencias en m con corrección de Bonferroni 
 q=dunnTest(m_data~groups, method="bonferroni")
 
@@ -262,7 +259,6 @@ Methods<-factor(rep(1:4,c(length(var.LSQ[,1]),length(var.S[,1]),length(var.SS[,1
 #Estructuramos como un data frame
 dat<-data.frame(m_data,Methods)
 
-par(mfrow=c(1,2))
 #Imprimimos el boxplot mostrando las diferencias
 plot1<-ggboxplot(dat, x = "Methods", y = "m_data") +
 stat_pvalue_manual(stat.test, y.position =max(median(var.LSQ[,1]),median(var.S[,1]),median(var.SS[,1]),median(var.PCA[,1]))+1, #Un mejor ajuste de las líneas
@@ -270,9 +266,8 @@ stat_pvalue_manual(stat.test, y.position =max(median(var.LSQ[,1]),median(var.S[,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Slope estimations",
-     title="Pairwise comparisons of the medians with Bonferroni correction (Dunn test)",
-     caption = parametros) 
-print(plot1)
+     title="Slopes") 
+# print(plot1)
 
 #La figura que se genera con las líneas anteriores sustituye el siguiente 
 
@@ -282,10 +277,10 @@ print(plot1)
 # axis(1, at = seq(6), labels = c('LSQ vs PCA','LSQ vs S','PCA vs S','LSQ vs SS','PCA vs SS', 'S vs SS'))
 # abline(h=0.05, col="red", lwd=2, lty=2)
 # mtext(parametros, side = 3, line = -0.9, outer = T) 
-# }
+#}
 
 
-if(a2$p.value<0.05){
+# if(a2$p.value<0.05){
 #Pruebas a pares de diferencias en b con corrección de Bonferroni 
 q=dunnTest(b_data~groups, method="bonferroni")
 
@@ -318,9 +313,8 @@ step.increase = 0.1,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Intercepts estimations",
-     title="Pairwise comparisons of the medians with Bonferroni correction (Dunn test)",
-     caption = parametros)
-print(plot2)
+     title="Intercepts")
+# print(plot2)
 
 # # lo anterior reemplaza esta grafica
 # plot(seq(1,6,1),q$res$P.adj,xlab='Comparatives',xaxt = 'n',
@@ -329,8 +323,11 @@ print(plot2)
 # axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs PCA','S vs PCA','LSQ vs SS','SS vs PCA','S vs SS'))
 # abline(h=0.05, col="red", lwd=2, lty=2)
 # mtext(parametros, side = 3, line = -0.9, outer = T)
-}
 
+# }
+
+#imprimimos plot1 y plot2 en conjunto
+grid.arrange(plot1, plot2, ncol=2, nrow = 1, top = "Pairwise comparisons of the medians with Bonferroni correction (Dunn test)",bottom = parametros )
 
 #Prueba de igualdad de varianzas (m)
 a3=fligner.test(m_data ~ groups)
@@ -338,17 +335,17 @@ a3=fligner.test(m_data ~ groups)
 #Prueba de igualdad de varianzas (b)
 a4=fligner.test(b_data ~ groups)
 
-plot(seq(1,2,1),c(a3$p.value,a4$p.value),main='Fligner-Killeen test for homoscedasticity',
- xlab='Comparatives',xaxt = 'n', ylab='p-value',ylim=c(0,1))
-axis(1, at = seq(2), labels = c('Slope','Intercept'))
-abline(h=0.05, col="red", lwd=2, lty=2)
-mtext(parametros, side = 3, line = -0.9, outer = T)
+# plot(seq(1,2,1),c(a3$p.value,a4$p.value),main='Fligner-Killeen test for homoscedasticity',
+#  xlab='Comparatives',xaxt = 'n', ylab='p-value',ylim=c(0,1))
+# axis(1, at = seq(2), labels = c('Slope','Intercept'))
+# abline(h=0.05, col="red", lwd=2, lty=2)
+# mtext(parametros, side = 3, line = -0.9, outer = T)
 
 #Si el p-valor es menor que 0.05 implica heterocedasticidad al estudiar los tres métodos
 #Hagamos pruebas a pares para determinar las diferencias entre métodos
 
 #Comparacion por pares para las m
-if(a3$p.value<0.05){
+# if(a3$p.value<0.05){
 #LSQ vs S
 m_data<-c(var.LSQ[,1],var.S[,1])
 #Etiquetas para identificar el método del cuál provienen
@@ -420,9 +417,8 @@ step.increase = 0.1,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Slopes estimations",
- title="Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)",
-caption= parametros) 
-print(plot3)
+ title="Slopes") 
+# print(plot3)
 
 # #el anterior grafico (plot3) reemplaza al que esta a continuacion
 # plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
@@ -431,10 +427,10 @@ print(plot3)
 # axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
 # abline(h=0.05, col="red", lwd=2, lty=2)
 # mtext(parametros, side = 3, line = -0.9, outer = T)
-}
+# }
 
 #Comparacion por pares sobre las b
-if(a4$p.value<0.05){
+# if(a4$p.value<0.05){
 #LSQ vs S
 b_data<-c(var.LSQ[,2],var.S[,2])
 #Etiquetas para identificar el método del cuál provienen
@@ -508,9 +504,8 @@ step.increase = 0.1,
 label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Intercepts estimations",
- title="Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)",
-caption=parametros)
-print(plot4)
+ title="Intercepts")
+#print(plot4)
 
 # plot(seq(1,6,1),p_val_adj,xlab='Comparatives',xaxt = 'n',
 #    ylab='p-value',ylim=c(0,1),
@@ -518,8 +513,12 @@ print(plot4)
 # axis(1, at = seq(6), labels = c('LSQ vs S','LSQ vs SS','LSQ vs PCA','S vs PCA','SS vs PCA', 'SS vs S'))
 # abline(h=0.05, col="red", lwd=2, lty=2)
 # mtext(parametros, side = 3, line = -0.9, outer = T)
-}
-}
+# }
+
+# imprimimos plot3 y plot4 en conjunto
+grid.arrange(plot3, plot4, ncol=2, nrow = 1, top = "Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)",bottom = parametros )
+
+
 }
 }
 }
