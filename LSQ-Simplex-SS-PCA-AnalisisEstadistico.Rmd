@@ -1,6 +1,6 @@
 ---
-title: "LSQ vs Simplex vs PCA"
-output: word_document
+title: "LSQ vs Simplex vs Simpler Simplex vs PCA"
+output: pdf_document
 ---
 
 ```{r setup, warning=FALSE,message=FALSE}
@@ -17,7 +17,7 @@ library(FSA)
 
 # Lectura de archivos y definición de variables
 
-```{r cargado de archivos,warning=FALSE,message=FALSE}
+```{r cargado de archivos,warning=FALSE,message=FALSE,results='asis',cache=TRUE}
 # Para facilitar la automatización de la revisión de archivos
 # los datos fueron colocados en subcarpetas en base a su nivel de
 # contaminación
@@ -105,7 +105,7 @@ aux[2:longitudes[k], ]
 
 ## Comportamiendo de las estimaciones por número de simulaciones
 
-```{r analisis y graficas,fig.dim = c(10,6),message=FALSE,warning=FALSE}
+```{r analisis y graficas,fig.dim = c(14,13),message=FALSE,warning=FALSE,results='asis'}
 for (n in 1:length(contaminacion)){
 qV<-contaminacion[n]/100 *pV
 for (l in 1:length(pendientes)){
@@ -146,6 +146,54 @@ ubound_m<-max(var.LSQ[,1],var.S[,1],var.SS[,1],var.PCA[,1])
 #Cotas para b para usar en límites del eje vertical
 lbound_b<-min(var.LSQ[,2],var.S[,2],var.SS[,2],var.PCA[,2])
 ubound_b<-max(var.LSQ[,2],var.S[,2],var.SS[,2],var.PCA[,2])
+
+# Graficas de simulaciones
+
+par(mfrow=c(4,2))
+plot(sims, var.LSQ[, 1],
+main = "LSQ slopes", xlab = "Simulations", ylab = "Estimations",
+ylim = c(lbound_m, ubound_m), pch = 20, cex=0.8
+)
+abline(h = m, col = "red", lwd = 2, lty = 2) # Pendiente real
+abline(h = mean(var.LSQ[, 1]), col = "blue", lwd = 2, lty = 4) # Pendiente promedio
+plot(sims, var.LSQ[, 2],
+main = "LSQ intercepts", xlab = "Simulations", ylab = "Estimations",
+ylim = c(lbound_b, ubound_b), pch = 20, cex=0.8
+)
+abline(h = b, col = "red", lwd = 2, lty = 2) # Ordenada al origen real
+abline(h = mean(var.LSQ[, 2]), col = "blue", lwd = 2, lty = 4) # Ordenada al origen
+# promedio
+
+plot(sims,var.S[,1],main='Simplex slopes',xlab='Simulations',ylab='Estimations',
+ ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
+abline(h=m, col="red", lwd=2, lty=2)
+abline(h=mean(var.S[,1]), col="blue", lwd=2, lty=4)
+plot(sims,var.S[,2],main='Simplex intercepts',xlab='Simulations',ylab='Estimations',
+ ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
+abline(h=b, col="red", lwd=2, lty=2)
+abline(h=mean(var.S[,2]), col="blue", lwd=2, lty=4)
+
+plot(sims,var.SS[,1],main='Simpler Simplex slopes',xlab='Simulations',ylab='Estimations',
+ ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
+abline(h=m, col="red", lwd=2, lty=2)
+abline(h=mean(var.SS[,1]), col="blue", lwd=2, lty=4)
+plot(sims,var.SS[,2],main='Simpler Simplex intercepts',xlab='Simulations',ylab='Estimations',
+ ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
+abline(h=b, col="red", lwd=2, lty=2)
+abline(h=mean(var.SS[,2]), col="blue", lwd=2, lty=4)
+
+
+plot(sims,var.PCA[,1],main='PCA slopes',xlab='Simulations',ylab='Estimations',
+ ylim = c(lbound_m,ubound_m),pch=20,cex=0.8)
+abline(h=m, col="red", lwd=2, lty=2)
+abline(h=mean(var.PCA[,1]), col="blue", lwd=2, lty=4)
+plot(sims,var.PCA[,2],main='PCA intercepts',xlab='Simulations',ylab='Estimations',
+ ylim = c(lbound_b,ubound_b),pch=20,cex=0.8)
+abline(h=b, col="red", lwd=2, lty=2)
+abline(h=mean(var.PCA[,2]), col="blue", lwd=2, lty=4)
+
+#Título para la figura mostrando parámetros usados
+mtext(parametros, side = 3, line = -1.2, outer = T)
 
 #Base de nombre de archivo
 directory = file.path('..',
@@ -302,7 +350,7 @@ label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 labs(y= "Intercepts estimations",
      title="Intercept comparisons")
 #imprimimos plot1 y plot2 en conjunto
-medians<-grid.arrange(plot1, plot2, ncol=2, nrow = 1,
+medians<-arrangeGrob(plot1, plot2, ncol=2, nrow = 1,
              top = "Pairwise comparisons of the medians with Bonferroni correction (Dunn test)",
              padding = unit(0.5,'cm'))
 
@@ -467,13 +515,14 @@ label = "p.adj.signif", hide.ns = T #No mostrar las diferencias NS
 )+theme(plot.title = element_text(hjust = 0.5))+
 labs(y= "Intercepts estimations",
  title="Intercept comparisons")
-#print(plot4)
 
 # imprimimos plot3 y plot4 en conjunto
-variance<-grid.arrange(plot3, plot4, ncol = 2, nrow = 1,
+variance<-arrangeGrob(plot3, plot4, ncol = 2, nrow = 1,
              top = "Pairwise comparisons of the variance with Bonferroni correction (Fligner-Killeen test)",bottom = parametros)
 
+grid.arrange(medians,variance,nrow=2,ncol=1)
 boxplots = arrangeGrob(medians,variance,nrow=2,ncol=1)
+
 ## Guardamos las graficas
 
 name1 = paste0('All_boxplots_',basename)
